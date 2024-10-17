@@ -1,0 +1,330 @@
+import datetime
+import json
+import sys
+from urllib.request import urlopen
+
+from PyQt6 import uic, QtCore, QtGui
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from pygismeteo import Gismeteo
+import sqlite3
+import sys
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi('цэ.ui', self)
+        url = 'http://ipinfo.io/json'
+        self.connection = sqlite3.connect("Gismeteo.db")
+        response = urlopen(url)
+        self.setFixedSize(self.size())
+        self.data = json.load(response)
+        self.test_schetchik = 0
+        self.test_flag = False
+        self.update_()
+        self.working_clock = QtCore.QTimer()
+        self.working_clock.setInterval(10000)
+        self.working_clock.timeout.connect(self.update_)
+        self.working_clock.start()
+
+    def diary(self):
+        self.test_flag = True
+        uic.loadUi('цэ1.ui', self)
+        self.working_clock.stop()
+        self.label_2.show()
+        self.label_3.show()
+        self.label_4.show()
+        self.label_5.show()
+        self.gif.setScaledSize(QtCore.QSize(800, 1000))
+        self.label.setMovie(self.gif)
+        self.label.resize(800, 600)
+        self.gif.start()
+        self.pushButton.clicked.connect(self.back)
+
+        self.test_clock = QtCore.QTimer()
+        self.test_clock.setInterval(3000)
+        self.test_clock.timeout.connect(self.okno)
+        self.test_clock.start()
+
+    def back(self):
+        self.working_clock.start()
+        uic.loadUi('цэ.ui', self)
+        self.test_flag = False
+        self.update_()
+
+    def test3(self):
+        self.test_window.label.setText("Ощущаете ли вы усталость?")
+        self.test_window.pushButton.setText("Сильную")
+        self.test_window.pushButton_2.setText("Слабую")
+        self.test_window.pushButton_3.setText("Нет")
+        self.test_window.pushButton.setIcon(QIcon())
+        self.test_window.pushButton_2.setIcon(QIcon())
+        self.test_window.pushButton_3.setIcon(QIcon())
+        self.test_window.pushButton.setFont(QFont('Yu Gothic UI Light', 12))
+        self.test_window.pushButton.resize(71, 61)
+        self.test_window.pushButton_2.resize(71, 61)
+        self.test_window.pushButton_3.resize(71, 61)
+        self.test_window.pushButton_2.setFont(QFont('Yu Gothic UI Light', 12))
+        self.test_window.pushButton_3.setFont(QFont('Yu Gothic UI Light', 12))
+        self.test_window.pushButton.clicked.connect(self.test_back)
+        self.test_window.pushButton_2.clicked.connect(self.test_back)
+        self.test_window.pushButton_3.clicked.connect(self.test_back)
+
+    def test2(self):
+        self.test_window.label.setText("Ощущаете ли вы головную боль?")
+        self.test_window.pushButton.setText("Сильную")
+        self.test_window.pushButton_2.setText("Слабую")
+        self.test_window.pushButton_3.setText("Нет")
+        self.test_window.pushButton.setIcon(QIcon())
+        self.test_window.pushButton_2.setIcon(QIcon())
+        self.test_window.pushButton_3.setIcon(QIcon())
+        self.test_window.pushButton.setFont(QFont('Yu Gothic UI Light', 12))
+        self.test_window.pushButton.resize(71, 61)
+        self.test_window.pushButton_2.resize(71, 61)
+        self.test_window.pushButton_3.resize(71, 61)
+        self.test_window.pushButton_2.setFont(QFont('Yu Gothic UI Light', 12))
+        self.test_window.pushButton_3.setFont(QFont('Yu Gothic UI Light', 12))
+        self.test_window.pushButton.clicked.connect(self.test3)
+        self.test_window.pushButton_2.clicked.connect(self.test3)
+        self.test_window.pushButton_3.clicked.connect(self.test3)
+
+    def test(self):
+        self.test_window = QMainWindow()
+        uic.loadUi('цэ2.ui', self.test_window)
+        self.test_window.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+        self.test_window.setWindowOpacity(0.75)
+        self.test_window.label.setFont(QFont('Yu Gothic UI Light', 14))
+        self.test_window.label.move(65, 60)
+        self.test_window.pushButton.setIcon(QIcon('good.png'))
+        self.test_window.pushButton.setIconSize(QtCore.QSize(58, 58))
+        self.test_window.pushButton_2.setIcon(QIcon(r'very_good.png'))
+        self.test_window.pushButton_2.setIconSize(QtCore.QSize(65, 65))
+        self.test_window.pushButton_3.setIcon(QIcon(r'so_so.png'))
+        self.test_window.pushButton_3.setIconSize(QtCore.QSize(85, 85))
+        self.test_window.pushButton.clicked.connect(self.test2)
+        self.test_window.pushButton_2.clicked.connect(self.test2)
+        self.test_window.pushButton_3.clicked.connect(self.test2)
+        self.test_window.show()
+
+    def test_back(self):
+        self.test_clock.start()
+        self.test_window.close()
+        self.diary()
+
+    def registration(self):
+        self.registration_window = QMainWindow()
+        uic.loadUi('registration.ui', self.registration_window)
+        self.registration_window.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint)
+        self.registration_window.setWindowOpacity(0.75)
+        self.registration_window.pushButton_2.hide()
+        self.registration_window.pushButton_3.hide()
+        self.registration_window.pushButton_4.hide()
+        self.registration_window.pushButton_2.setEnabled(False)
+        self.registration_window.pushButton_3.setEnabled(False)
+        self.registration_window.pushButton_4.setEnabled(False)
+        self.registration_window.pushButton_5.hide()
+        self.registration_window.pushButton_5.setEnabled(False)
+        self.registration_window.pushButton_6.hide()
+        self.registration_window.pushButton_6.setEnabled(False)
+        self.registration_window.pushButton.clicked.connect(self.registration1)
+        self.registration_window.lineEdit.hide()
+        self.registration_window.show()
+
+    def registration1(self):
+        self.registration_window.label.setText("Как вас называть?")
+        self.registration_window.label_2.setText("")
+        self.registration_window.lineEdit.show()
+        self.registration_window.pushButton_2.show()
+        self.registration_window.pushButton_2.setEnabled(True)
+        self.registration_window.pushButton.hide()
+        self.registration_window.pushButton.setEnabled(False)
+        self.registration_window.pushButton_2.clicked.connect(self.registration2_1)
+
+    def registration2_1(self):
+        self.person = self.registration_window.lineEdit.text()
+        print([self.person])
+        self.registration_window.lineEdit.hide()
+        self.registration_window.label.setText("Имеются ли у вас заболевания?")
+        self.registration_window.lineEdit.setText("")
+        self.registration_window.pushButton_2.hide()
+        self.registration_window.pushButton_2.setEnabled(False)
+        self.registration_window.pushButton_5.show()
+        self.registration_window.pushButton_5.setEnabled(True)
+        self.registration_window.pushButton_6.show()
+        self.registration_window.pushButton_6.setEnabled(True)
+        self.registration_window.pushButton_5.clicked.connect(self.registration2_2)
+        self.registration_window.pushButton_6.clicked.connect(self.registration3_1)
+
+    def registration2_2(self):
+        self.registration_window.lineEdit.show()
+        self.registration_window.lineEdit.setText("")
+        self.registration_window.pushButton_3.show()
+        self.registration_window.pushButton_3.setEnabled(True)
+        self.registration_window.pushButton_5.hide()
+        self.registration_window.pushButton_5.setEnabled(False)
+        self.registration_window.pushButton_6.hide()
+        self.registration_window.pushButton_6.setEnabled(False)
+        self.registration_window.label.setText("Какие у вас заболевания?")
+        self.registration_window.pushButton_3.clicked.connect(self.registration3_1)
+
+    def registration3_1(self):
+        self.bolezn = self.registration_window.lineEdit.text()
+        self.registration_window.lineEdit.hide()
+        self.registration_window.label.setText("Имеются ли у вас аллергия?")
+        self.registration_window.lineEdit.setText("")
+        self.registration_window.pushButton_3.hide()
+        self.registration_window.pushButton_3.setEnabled(False)
+        self.registration_window.pushButton_5.show()
+        self.registration_window.pushButton_5.setEnabled(True)
+        self.registration_window.pushButton_6.show()
+        self.registration_window.pushButton_6.setEnabled(True)
+        self.registration_window.pushButton_5.clicked.connect(self.registration3_2)
+        self.registration_window.pushButton_6.clicked.connect(self.zapolnenie)
+
+    def registration3_2(self):
+        self.registration_window.lineEdit.show()
+        self.registration_window.pushButton_4.show()
+        self.registration_window.pushButton_4.setEnabled(True)
+        self.registration_window.lineEdit.setText("")
+        self.registration_window.pushButton_5.hide()
+        self.registration_window.pushButton_5.setEnabled(False)
+        self.registration_window.pushButton_6.hide()
+        self.registration_window.pushButton_6.setEnabled(False)
+        self.registration_window.label.setText("На что у вас аллергия?")
+        self.registration_window.pushButton_4.clicked.connect(self.zapolnenie)
+
+    def zapolnenie(self):
+        self.registration_window.pushButton_5.hide()
+        self.registration_window.pushButton_5.setEnabled(False)
+        self.registration_window.pushButton_6.hide()
+        self.registration_window.pushButton_6.setEnabled(False)
+        self.allergy = self.registration_window.lineEdit.text()
+        self.connection.cursor().execute('INSERT INTO Users VALUES (?, ?, ?);',
+                                         (self.person, self.allergy, self.bolezn))
+        self.connection.commit()
+        self.registration_window.close()
+        self.test()
+
+    def okno(self):
+        print(self.test_schetchik)
+        if (self.test_schetchik % 1200 == 0) and self.test_flag:
+            self.test_clock.stop()
+            count = self.connection.cursor().execute(f"""SELECT user FROM Users""").fetchall()
+            print(count)
+            if count:
+                self.test()
+            else:
+                self.registration()
+        self.test_schetchik += 1
+
+    def okno1(self):
+        self.diary()
+        self.label_2.hide()
+        self.label_3.hide()
+        self.label_4.hide()
+        self.label_5.hide()
+
+    def update_(self):
+        self.pushButton.clicked.connect(self.close)
+        self.pushButton_2.setIcon(QIcon('icon.png'))
+        self.pushButton_2.setIconSize(QtCore.QSize(128, 128))
+        self.pushButton_2.clicked.connect(self.diary)
+
+        self.pushButton_3.setIcon(QIcon('question.png'))
+        self.pushButton_3.setIconSize(QtCore.QSize(128, 128))
+        self.pushButton_3.clicked.connect(self.okno1)
+
+        gismeteo = Gismeteo()
+        search_results = gismeteo.search.by_query(self.data['city'])
+        # search_results = gismeteo.search.by_query('Нигер')
+        city_id = search_results[0]
+        r = city_id.name
+        # print(r)
+        # print(city_id.name)
+        city_id = search_results[0].id
+        current = gismeteo.current.by_id(city_id)
+        hour3 = gismeteo.step3.by_id(city_id, days=1)
+        print(current)
+        print(hour3[1])
+        print(hour3[2])
+        print(hour3[3])
+        # print(current.temperature.air.c)
+        # print(current.description.full)
+        # print(current.humidity.percent)
+        # print(current.pressure.mm_hg_atm)
+        # print(current.icon)
+        weekd = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+        month = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь',
+                 'Ноябрь', 'Декабрь']
+        self.label.setText(str(r))
+        self.label.resize(self.label.sizeHint())
+        self.label.move(740 - self.label.width(), 25)
+        self.label_2.setText(f'{str(current.temperature.air.c)}°')
+        self.label_2.resize(self.label_2.sizeHint())
+        self.label_4.setText(f"💦 {str(current.humidity.percent)}%")
+        a = (str(datetime.datetime.now()).split())[1]
+        time = (a.split('.'))[0]
+        self.label_5.setText(f"↓ {str(current.pressure.mm_hg_atm)} мм")
+        self.label_6.setText(str(datetime.datetime.now().time())[:5])
+        # self.label_6.setText('22:15')
+        description = str(current.description.full)
+        self.label_8.setText('')
+        if 'Ясно' in description:
+            self.label_9.setStyleSheet(
+                "QLabel {background-color: qlineargradient(spread: pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(15, 147, 255, 150), stop:1 rgba(250 , 250, 250, 150)); border-radius: 35%}")
+            self.gif = QMovie("photo\gifgivecom.gif")
+        if 'Пасмурно' in description:
+            self.label_9.setStyleSheet(
+                "QLabel {background-color: qlineargradient(spread: pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(125, 125, 125, 150), stop:1 rgba(250 , 250, 250, 150)); border-radius: 35%}")
+            self.gif = QMovie("photo\ChM.gif")
+            self.gif.setSpeed(50)
+        if 'блачно' in description:
+            self.label_9.setStyleSheet(
+                "QLabel {background-color: qlineargradient(spread: pad, x1:0, y1:0.5, x2:1, y2:0.5, stop:0 rgba(219, 239, 255, 150), stop:1 rgba(250 ,250, 250, 150)); border-radius: 35%}")
+            self.gif = QMovie("photo\облачно.gif")
+            self.gif.setSpeed(50)
+        if ',' in description:
+            description, description1 = str(current.description.full).split(', ')[:2]
+            self.label_8.setText(description1)
+            self.label_8.resize(self.label_8.sizeHint())
+            self.label_3.setText(description)
+            self.label_3.resize(self.label_3.sizeHint())
+            self.label_3.move(385 - (self.label_3.width()) // 2, 250)
+            self.label_8.move(385 - (self.label_8.width()) // 2, 280)
+            if 'дождь' in description1:
+                self.gif = QMovie("photo\дождь.gif")
+                self.gif.setSpeed(50)
+            if 'гроза' in description1:
+                self.gif = QMovie("photo\OtZ.gif")
+        else:
+            self.label_3.setText(description)
+            self.label_3.resize(self.label_3.sizeHint())
+            self.label_3.move(385 - (self.label_3.width()) // 2, 270)
+        self.label_3.setText(description)
+        self.label_3.resize(self.label_3.sizeHint())
+        self.label_11.setText(
+            f"{weekd[datetime.datetime.today().weekday()]}, {datetime.datetime.now().day} {month[datetime.datetime.now().month - 1]}")
+        self.label_11.resize(self.label_11.sizeHint())
+        self.label_11.move(740 - self.label_11.width(), self.label_11.y())
+        self.label_8.resize(self.label_8.sizeHint())
+        self.gif.setScaledSize(QtCore.QSize(800, 1000))
+        self.label_7.setMovie(self.gif)
+        self.label_7.resize(800, 600)
+        self.gif.start()
+        self.show()
+        pixmap = QtGui.QPixmap(f'photo\{current.icon}.png')
+        self.label_10.setPixmap(pixmap)
+        self.label_10.setScaledContents(True)
+        self.label_10.resize(130, 85)
+
+    def display_clock(self):
+        self.label_6.setText(str(datetime.datetime.now()))
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+ex = MainWindow()
+ex.show()
+sys.exit(app.exec())
+con.slose()
